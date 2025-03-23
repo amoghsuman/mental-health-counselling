@@ -1,23 +1,36 @@
-# app.py
 import streamlit as st
 from chatbot import get_chatbot_response
 
-st.set_page_config(page_title="Mental Health Counseling Chatbot", layout="centered")
+st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
+st.title("🧠 Mental Health Support Chatbot")
 
-st.title("Mental Health Counseling Chatbot")
-st.markdown("This chatbot is designed to offer empathetic and thoughtful mental health support.")
+# Mode selector
+mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
+st.markdown("Feel free to express what's on your mind. I'm here to listen. 💙")
 
-if 'chat_history' not in st.session_state:
+# Initialize chat history in session
+if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-user_input = st.text_input("How can I help you today?")
+# Message input
+user_input = st.text_input("Type your message here...")
 
+# Handle response
 if st.button("Send") and user_input:
-    response = get_chatbot_response(user_input)
+    response = get_chatbot_response(user_input, mode=mode)
     st.session_state.chat_history.append(("You", user_input))
     st.session_state.chat_history.append(("Chatbot", response))
 
-for speaker, msg in reversed(st.session_state.chat_history):
-    with st.chat_message("user" if speaker == "You" else "assistant"):
-        st.markdown(msg)
+# Emoji/avatar mapping
+SPEAKER_MAP = {
+    "You": {"role": "user", "emoji": "🧑‍💻"},
+    "Chatbot": {"role": "assistant", "emoji": {
+        "Therapist": "🧠", "Friend": "👭", "Coach": "💼"
+    }.get(mode, "🧠")}
+}
 
+# Display chat messages (latest on top)
+for speaker, msg in reversed(st.session_state.chat_history):
+    meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
+    with st.chat_message(meta["role"]):
+        st.markdown(f"{meta['emoji']} **{speaker}:** {msg}")
