@@ -107,25 +107,29 @@ if st.session_state.reset_input_flag:
     st.rerun()
 
 # --- Chat Display (Newest on Top) ---
-for message in reversed(st.session_state.chat_history):
-    role = message.get("role", "bot")
-    text = message.get("text", "")
-    ts = message.get("time", "earlier")
+# --- Chat Display (Newest pairs on top, User above Bot) ---
+pairs = list(zip(st.session_state.chat_history[::2], st.session_state.chat_history[1::2]))
+for user_msg, bot_msg in reversed(pairs):
+    for msg in [user_msg, bot_msg]:  # Show user first, then bot
+        role = msg.get("role", "bot")
+        text = msg.get("text", "")
+        ts = msg.get("time", "earlier")
 
-    meta = {
-        "user": {"role": "user", "emoji": "🧑‍💻"},
-        "bot": {
-            "role": "assistant",
-            "emoji": {
-                "Therapist": "🧠",
-                "Friend": "👭",
-                "Coach": "💼"
-            }.get(mode, "🧠")
-        }
-    }.get(role, {"role": "assistant", "emoji": "🤖"})
+        meta = {
+            "user": {"role": "user", "emoji": "🧑‍💻"},
+            "bot": {
+                "role": "assistant",
+                "emoji": {
+                    "Therapist": "🧠",
+                    "Friend": "👭",
+                    "Coach": "💼"
+                }.get(mode, "🧠")
+            }
+        }.get(role, {"role": "assistant", "emoji": "🤖"})
 
-    with st.chat_message(meta["role"]):
-        st.markdown(f"{meta['emoji']} **{role.capitalize()}** _(at {ts})_: {text}")
+        with st.chat_message(meta["role"]):
+            st.markdown(f"{meta['emoji']} **{role.capitalize()}** _(at {ts})_: {text}")
+
 
 # --- Safe Clear Chat Rerun ---
 if st.session_state.clear_chat_flag:
