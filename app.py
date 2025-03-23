@@ -40,11 +40,6 @@ if "input_text" not in st.session_state:
 if "clear_chat_triggered" not in st.session_state:
     st.session_state.clear_chat_triggered = False
 
-# ✅ Safe early rerun (before layout) if Clear Chat was clicked
-if st.session_state.clear_chat_triggered:
-    st.session_state.clear_chat_triggered = False
-    st.experimental_rerun()
-
 # --- Mode & Mood ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
 mood = st.radio(
@@ -151,6 +146,12 @@ with col4:
     if st.button("✈️", key="send_icon"):
         handle_message()
 st.markdown("</div></div>", unsafe_allow_html=True)
+
+# --- SAFE RERUN after Clear Chat ---
+if st.session_state.get("clear_chat_triggered"):
+    st.session_state.clear_chat_triggered = False
+    st.stop()
+    st.experimental_rerun()
 
 # --- Custom Footer ---
 custom_footer = """
