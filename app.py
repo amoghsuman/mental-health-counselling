@@ -71,7 +71,36 @@ def handle_message():
         st.session_state["input_text"] = ""  # Clear field
 
 # --- Text Input (Enter to Send) ---
-st.text_input("Type your message here...", key="input_text", on_change=handle_message)
+# --- Sticky Input Box ---
+sticky_input_box = """
+    <style>
+        .sticky-input {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 15px;
+            background-color: #ffffff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .sticky-input input {
+            width: 100% !important;
+            font-size: 16px !important;
+        }
+
+        /* Make space so input doesn't cover chat */
+        .block-container {
+            padding-bottom: 90px !important;
+        }
+    </style>
+
+    <div class="sticky-input">
+"""
+st.markdown(sticky_input_box, unsafe_allow_html=True)
+st.text_input("Type your message here...", key="input_text", on_change=handle_message, label_visibility="collapsed")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Clear Chat Button ---
 if st.button("🧹 Clear Chat"):
@@ -113,3 +142,11 @@ for user_msg, bot_msg in reversed(st.session_state.chat_history):
 if st.session_state.get("clear_chat_triggered"):
     st.session_state.clear_chat_triggered = False  # reset flag
     st.experimental_rerun()
+
+# --- Custom Footer ---
+custom_footer = """
+    <div style='text-align: center; padding: 1rem 0; font-size: 14px; color: #888;'>
+        Powered by <strong>GranT Thornton</strong> </strong>
+    </div>
+"""
+st.markdown(custom_footer, unsafe_allow_html=True)
