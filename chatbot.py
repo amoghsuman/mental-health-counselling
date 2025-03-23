@@ -1,9 +1,10 @@
 import openai
 import streamlit as st
+from openai import OpenAI
 
 def get_chatbot_response(user_input, mode="Therapist", mood="Neutral"):
     try:
-        openai.api_key = st.secrets["openai_api_key"]
+        client = OpenAI(api_key=st.secrets["openai_api_key"])
     except Exception:
         return "⚠️ OpenAI API key is missing or misconfigured. Please check your Streamlit secrets."
 
@@ -29,14 +30,13 @@ def get_chatbot_response(user_input, mode="Therapist", mood="Neutral"):
         )
     }
 
-    system_prompt = system_prompts.get(mode, system_prompts["Therapist"])
     messages = [
-        {"role": "system", "content": system_prompt},
+        {"role": "system", "content": system_prompts.get(mode, system_prompts["Therapist"])},
         {"role": "user", "content": f"My current mood is '{mood}'. Here's my message: {user_input}"}
     ]
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
             temperature=0.7,
