@@ -17,5 +17,7 @@ if st.button("Send") and user_input:
     st.session_state.chat_history.append(("You", user_input))
     st.session_state.chat_history.append(("Chatbot", response))
 
-for speaker, msg in st.session_state.chat_history:
-    st.markdown(f"**{speaker}:** {msg}")
+for speaker, msg in reversed(st.session_state.chat_history):
+    with st.chat_message("user" if speaker == "You" else "assistant"):
+        st.markdown(msg)
+
