@@ -15,32 +15,33 @@ mood = st.radio(
     ["😊 Happy", "😔 Sad", "😡 Angry", "😨 Anxious", "😐 Neutral"],
     horizontal=True
 )
-mood_label = mood.split(" ")[1]  # Extract mood text (e.g., "Happy")
+mood_label = mood.split(" ")[1]
 st.markdown(f"🧭 Current mood: **{mood}**")
 
-# --- Initialize Chat History ---
+# --- Init Chat History ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- User Input Field ---
-st.text_input("Type your message here...", key="input_text")
-user_input = st.session_state.input_text
+# --- Message Handler ---
+def handle_message():
+    user_input = st.session_state.input_text
+    if user_input:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+        with st.spinner("Chatbot is typing..."):
+            response = get_chatbot_response(user_input, mode=mode, mood=mood_label)
+        st.session_state.chat_history.append((
+            ("You", user_input, now),
+            ("Chatbot", response, now)
+        ))
+        st.session_state["input_text"] = ""  # Clear field
 
-# --- Send Message ---
-if st.button("Send") and user_input:
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    with st.spinner("Chatbot is typing..."):
-        response = get_chatbot_response(user_input, mode=mode, mood=mood_label)
-    st.session_state.chat_history.append((
-        ("You", user_input, now),
-        ("Chatbot", response, now)
-    ))
-    st.session_state["input_text"] = ""  # ✅ Safe way to clear field
+# --- Text Input (Enter to Send) ---
+st.text_input("Type your message here...", key="input_text", on_change=handle_message)
 
 # --- Clear Chat Button ---
 if st.button("🧹 Clear Chat"):
     st.session_state.chat_history = []
-    st.experimental_rerun() # ✅ No input_text reset needed here
+    st.experimental_rerun()
 
 # --- Avatar / Role Map ---
 SPEAKER_MAP = {
