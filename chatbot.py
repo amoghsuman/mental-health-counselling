@@ -1,12 +1,15 @@
-# chatbot.py
 import openai
 import streamlit as st
 
-openai.api_key = st.secrets["openai_api_key"]
+# Create OpenAI client using the new v1.x syntax
+client = openai.OpenAI(api_key=st.secrets["openai_api_key"])
 
 def get_chatbot_response(user_input):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": user_input}]
+        messages=[
+            {"role": "system", "content": "You are a helpful, empathetic mental health assistant."},
+            {"role": "user", "content": user_input}
+        ]
     )
-    return response.choices[0].message['content']
+    return response.choices[0].message.content
