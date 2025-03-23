@@ -39,6 +39,8 @@ if "clear_chat_flag" not in st.session_state:
     st.session_state.clear_chat_flag = False
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
+if "send_button_pressed" not in st.session_state:
+    st.session_state.send_button_pressed = False
 
 # --- Mode & Mood ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
@@ -67,7 +69,7 @@ def handle_message():
             "text": response,
             "time": now
         })
-    st.session_state.input_text = ""  # Safe to reset inside callback
+        st.session_state.input_text = ""  # Safe only inside this block
 
 # --- Clear Chat Handler ---
 def clear_chat():
@@ -85,10 +87,15 @@ with col3:
     )
 with col4:
     if st.button("✈️", key="send_icon"):
-        handle_message()
+        st.session_state.send_button_pressed = True
 with col5:
     if st.button("🧹 Clear Chat"):
         clear_chat()
+
+# --- Handle Send Button After Widgets Rendered ---
+if st.session_state.send_button_pressed:
+    handle_message()
+    st.session_state.send_button_pressed = False  # Reset safely
 
 # --- Chat Display (Newest on Top) ---
 for message in reversed(st.session_state.chat_history):
@@ -115,7 +122,7 @@ for message in reversed(st.session_state.chat_history):
 if st.session_state.clear_chat_flag:
     st.session_state.chat_history = []
     st.session_state.clear_chat_flag = False
-    st.rerun()  # ✅ clean reset without directly mutating input_text
+    st.rerun()
 
 # --- Custom Footer ---
 custom_footer = """
