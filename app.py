@@ -3,8 +3,8 @@ from datetime import datetime
 from chatbot import get_chatbot_response
 
 # --- Page Config ---
-st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
-st.title("🧠 Mental Health Support Chatbot")
+st.set_page_config(page_title="🧠 Mental Health Assistant", layout="centered")
+st.title("🧠 Mental Health Assistant")
 
 # --- Hide GitHub icon, footer, and "Hosted with Streamlit" ---
 clean_ui_css = """
@@ -85,11 +85,11 @@ with col3:
         "Type your message here...",
         key="input_text",
         on_change=lambda: handle_message(clear_input=True),
-        placeholder="Type something to share what's on your mind...",
+        placeholder="Tell me what's on your mind...",
         label_visibility="collapsed"
     )
 with col4:
-    if st.button("✈️", key="send_icon"):
+    if st.button("Send", key="send_icon"):
         st.session_state.send_button_pressed = True
 with col5:
     if st.button("🧹 Clear Chat"):
