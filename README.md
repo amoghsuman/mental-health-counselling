@@ -25,3 +25,23 @@ mental-health-counselling/
 ├── chatbot.py          # Core logic for handling OpenAI responses
 ├── requirements.txt    # Project dependencies
 └── README.md           # Project documentation
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome and appreciated!
+
+If you'd like to improve this chatbot or add new features, follow these steps:
+
+1. 🍴 Fork the repository
+2. 🌿 Create a new branch: `git checkout -b feature-yourFeature`
+3. ✍️ Make your changes and commit: `git commit -m "Add your message"`
+4. 🚀 Push to your fork: `git push origin feature-yourFeature`
+5. 🔁 Submit a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
