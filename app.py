@@ -72,7 +72,7 @@ def handle_message(clear_input=False):
             "time": now
         })
         if clear_input:
-            st.session_state.input_text = ""
+            st.session_state.input_text = ""  # ✅ Safe inside on_change
 
 # --- Clear Chat Handler ---
 def clear_chat():
@@ -97,14 +97,14 @@ with col5:
 
 # --- Handle Send Button After Widgets Rendered ---
 if st.session_state.send_button_pressed:
-    handle_message(clear_input=False)
+    handle_message(clear_input=False)  # ❌ Don't clear directly
     st.session_state.send_button_pressed = False
-    st.session_state.reset_input_flag = True  # ✅ Trigger safe clearing
+    st.session_state.reset_input_flag = True  # ✅ Triggers safe rerun reset
 
-# --- Reset input_text safely after rerun ---
+# --- Reset input_text safely via rerun ---
 if st.session_state.reset_input_flag:
-    st.session_state.input_text = ""
     st.session_state.reset_input_flag = False
+    st.rerun()
 
 # --- Chat Display (Newest on Top) ---
 for message in reversed(st.session_state.chat_history):
