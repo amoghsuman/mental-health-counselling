@@ -128,7 +128,7 @@ if st.session_state.clear_chat_flag:
 # --- Custom Footer ---
 custom_footer = """
 <div style='text-align: center; padding: 1rem 0; font-size: 14px; color: #888;'>
-    Powered by <strong>Grant Thornton</strong> | Built with 💙 by <strong>Amogh Suman</strong>
+    Built with 💙 by <strong>Grant Thornton</strong> 
 </div>
 """
 st.markdown(custom_footer, unsafe_allow_html=True)
