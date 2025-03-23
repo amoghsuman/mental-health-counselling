@@ -16,10 +16,13 @@ if "chat_history" not in st.session_state:
 user_input = st.text_input("Type your message here...")
 
 # Handle response
+# Store message pairs
 if st.button("Send") and user_input:
     response = get_chatbot_response(user_input, mode=mode)
-    st.session_state.chat_history.append(("You", user_input))
-    st.session_state.chat_history.append(("Chatbot", response))
+    st.session_state.chat_history.append((
+        ("You", user_input),
+        ("Chatbot", response)
+    ))
 
 # Emoji/avatar mapping
 SPEAKER_MAP = {
@@ -30,7 +33,9 @@ SPEAKER_MAP = {
 }
 
 # Display chat messages (latest on top)
-for speaker, msg in reversed(st.session_state.chat_history):
-    meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
-    with st.chat_message(meta["role"]):
-        st.markdown(f"{meta['emoji']} **{speaker}:** {msg}")
+# Display in reverse, preserving user-bot sequence
+for user_msg, bot_msg in reversed(st.session_state.chat_history):
+    for speaker, msg in [user_msg, bot_msg]:
+        meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
+        with st.chat_message(meta["role"]):
+            st.markdown(f"{meta['emoji']} **{speaker}:** {msg}")
