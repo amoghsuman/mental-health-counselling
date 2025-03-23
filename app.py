@@ -41,6 +41,8 @@ if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 if "send_button_pressed" not in st.session_state:
     st.session_state.send_button_pressed = False
+if "reset_input_flag" not in st.session_state:
+    st.session_state.reset_input_flag = False
 
 # --- Mode & Mood ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
@@ -70,7 +72,7 @@ def handle_message(clear_input=False):
             "time": now
         })
         if clear_input:
-            st.session_state.input_text = ""  # ✅ Only clear if called via on_change
+            st.session_state.input_text = ""
 
 # --- Clear Chat Handler ---
 def clear_chat():
@@ -82,7 +84,7 @@ with col3:
     st.text_input(
         "Type your message here...",
         key="input_text",
-        on_change=lambda: handle_message(clear_input=True),  # ✅ Safe only here
+        on_change=lambda: handle_message(clear_input=True),
         placeholder="Type something to share what's on your mind...",
         label_visibility="collapsed"
     )
@@ -95,8 +97,14 @@ with col5:
 
 # --- Handle Send Button After Widgets Rendered ---
 if st.session_state.send_button_pressed:
-    handle_message(clear_input=False)  # ❌ do not clear input directly
+    handle_message(clear_input=False)
     st.session_state.send_button_pressed = False
+    st.session_state.reset_input_flag = True  # ✅ Trigger safe clearing
+
+# --- Reset input_text safely after rerun ---
+if st.session_state.reset_input_flag:
+    st.session_state.input_text = ""
+    st.session_state.reset_input_flag = False
 
 # --- Chat Display (Newest on Top) ---
 for message in reversed(st.session_state.chat_history):
