@@ -50,6 +50,20 @@ mood = st.radio(
 mood_label = mood.split(" ")[1]
 st.markdown(f"🧭 Current mood: **{mood}**")
 
+# --- Input Bar (at top of chat area) ---
+col3, col4 = st.columns([6, 1])
+with col3:
+    st.text_input(
+        "Type your message here...",
+        key="input_text",
+        on_change=lambda: handle_message(clear_input=True),
+        placeholder="Type something to share what's on your mind...",
+        label_visibility="collapsed"
+    )
+with col4:
+    if st.button("✈️", key="send_icon"):
+        handle_message(clear_input=False)
+
 # --- Message Handler ---
 def handle_message(clear_input=True):
     user_input = st.session_state.input_text
@@ -64,20 +78,6 @@ def handle_message(clear_input=True):
         if clear_input:
             st.session_state["input_text"] = ""
 
-# --- Input Bar (Now at the top of the chat section) ---
-col3, col4 = st.columns([6, 1])
-with col3:
-    st.text_input(
-        "Type your message here...",
-        key="input_text",
-        on_change=handle_message,
-        placeholder="Type something to share what's on your mind...",
-        label_visibility="collapsed"
-    )
-with col4:
-    if st.button("✈️", key="send_icon"):
-        handle_message(clear_input=False)
-
 # --- Top Buttons (Send + Clear Chat) ---
 col1, col2 = st.columns([1, 1])
 with col1:
@@ -85,12 +85,12 @@ with col1:
         handle_message(clear_input=False)
 with col2:
     if st.button("🧹 Clear Chat"):
-        st.session_state.chat_history = []
-        st.session_state.input_text = ""
-        st.session_state.clear_chat_triggered = True
+        st.session_state.clear_chat_triggered = True  # Delay state reset safely
 
 # --- Safe rerun after Clear Chat ---
 if st.session_state.get("clear_chat_triggered"):
+    st.session_state.chat_history = []
+    st.session_state.input_text = ""
     st.session_state.clear_chat_triggered = False
     st.stop()
     st.experimental_rerun()
