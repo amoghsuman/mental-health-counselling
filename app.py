@@ -34,8 +34,10 @@ SPEAKER_MAP = {
 
 # Display chat messages (latest on top)
 # Display in reverse, preserving user-bot sequence
+# Display chat in reverse (user-bot pair)
 for user_msg, bot_msg in reversed(st.session_state.chat_history):
-    for speaker, msg in [user_msg, bot_msg]:
+    for speaker_msg in [user_msg, bot_msg]:
+        speaker, msg = speaker_msg
         meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
         with st.chat_message(meta["role"]):
             st.markdown(f"{meta['emoji']} **{speaker}:** {msg}")
