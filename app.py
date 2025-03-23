@@ -35,8 +35,10 @@ st.markdown(clean_ui_css, unsafe_allow_html=True)
 # --- Init Session State ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-if "clear_chat" not in st.session_state:
-    st.session_state.clear_chat = False
+if "clear_chat_flag" not in st.session_state:
+    st.session_state.clear_chat_flag = False
+if "input_text" not in st.session_state:
+    st.session_state.input_text = ""
 
 # --- Mode & Mood ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
@@ -65,11 +67,11 @@ def handle_message():
             "text": response,
             "time": now
         })
-    st.session_state["input_text"] = ""  # Safely reset inside callback
+    st.session_state.input_text = ""  # Safely reset inside callback
 
+# --- Clear Chat Handler (flag-based) ---
 def clear_chat():
-    st.session_state.chat_history = []
-    st.session_state.input_text = ""
+    st.session_state.clear_chat_flag = True
 
 # --- Input Bar (at top of chat area) ---
 col3, col4, col5 = st.columns([6, 1, 1])
@@ -108,6 +110,13 @@ for message in reversed(st.session_state.chat_history):
 
     with st.chat_message(meta["role"]):
         st.markdown(f"{meta['emoji']} **{role.capitalize()}** _(at {ts})_: {text}")
+
+# --- Safe Clear Chat Rerun ---
+if st.session_state.clear_chat_flag:
+    st.session_state.chat_history = []
+    st.session_state.input_text = ""
+    st.session_state.clear_chat_flag = False
+    st.experimental_rerun()
 
 # --- Custom Footer ---
 custom_footer = """
