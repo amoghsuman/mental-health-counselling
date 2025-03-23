@@ -62,7 +62,21 @@ def handle_message(clear_input=True):
             ("Chatbot", response, now)
         ))
         if clear_input:
-            st.session_state["input_text"] = ""  # Safe only inside on_change
+            st.session_state["input_text"] = ""
+
+# --- Input Bar (Now at the top of the chat section) ---
+col3, col4 = st.columns([6, 1])
+with col3:
+    st.text_input(
+        "Type your message here...",
+        key="input_text",
+        on_change=handle_message,
+        placeholder="Type something to share what's on your mind...",
+        label_visibility="collapsed"
+    )
+with col4:
+    if st.button("✈️", key="send_icon"):
+        handle_message(clear_input=False)
 
 # --- Top Buttons (Send + Clear Chat) ---
 col1, col2 = st.columns([1, 1])
@@ -74,6 +88,12 @@ with col2:
         st.session_state.chat_history = []
         st.session_state.input_text = ""
         st.session_state.clear_chat_triggered = True
+
+# --- Safe rerun after Clear Chat ---
+if st.session_state.get("clear_chat_triggered"):
+    st.session_state.clear_chat_triggered = False
+    st.stop()
+    st.experimental_rerun()
 
 # --- Chat Display (Newest on Top) ---
 SPEAKER_MAP = {
@@ -98,67 +118,6 @@ for user_msg, bot_msg in reversed(st.session_state.chat_history):
         meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
         with st.chat_message(meta["role"]):
             st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
-
-# --- Sticky Input Bar with Placeholder & Send Icon ---
-sticky_input_css = """
-<style>
-.sticky-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 10px 15px;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    z-index: 100;
-}
-.input-row {
-    display: flex;
-    gap: 10px;
-}
-.input-row input {
-    flex: 1;
-    padding: 0.6rem;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-.input-row button {
-    padding: 0.6rem 1rem;
-    font-size: 18px;
-    background-color: #00C853;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.block-container {
-    padding-bottom: 90px !important;
-}
-</style>
-"""
-st.markdown(sticky_input_css, unsafe_allow_html=True)
-
-st.markdown("<div class='sticky-container'><div class='input-row'>", unsafe_allow_html=True)
-col3, col4 = st.columns([6, 1])
-with col3:
-    st.text_input(
-        "Type your message here...",
-        key="input_text",
-        on_change=handle_message,  # Enter key triggers here
-        placeholder="Type something to share what's on your mind...",
-        label_visibility="collapsed"
-    )
-with col4:
-    if st.button("✈️", key="send_icon"):
-        handle_message(clear_input=False)
-st.markdown("</div></div>", unsafe_allow_html=True)
-
-# --- Safe rerun after Clear Chat ---
-if st.session_state.get("clear_chat_triggered"):
-    st.session_state.clear_chat_triggered = False
-    st.stop()
-    st.experimental_rerun()
 
 # --- Custom Footer ---
 custom_footer = """
