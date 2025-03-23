@@ -1,0 +1,37 @@
+/* Dark background and text */
+body, [data-testid="stAppViewContainer"] {
+    background-color: #121212 !important;
+    color: #E0E0E0 !important;
+}
+
+/* Headings and paragraphs */
+h1, h2, h3, h4, h5, h6, p, label, span, div {
+    color: #E0E0E0 !important;
+}
+
+/* Text input */
+input[type="text"] {
+    background-color: #1E1E1E !important;
+    color: #FFFFFF !important;
+    border: 1px solid #444444 !important;
+}
+
+/* Dropdown and buttons */
+[data-testid="stSelectbox"] div, .stButton > button {
+    background-color: #2A2A2A !important;
+    color: #FFFFFF !important;
+}
+
+/* Chat bubble styling */
+[data-testid="stMarkdownContainer"] {
+    font-size: 16px;
+    background-color: #1E1E1E;
+    padding: 10px;
+    border-radius: 10px;
+    color: #FFFFFF !important;
+}
+
+/* Spinner */
+[data-testid="stSpinner"] {
+    color: #00FFCC !important;
+}

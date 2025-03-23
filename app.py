@@ -6,30 +6,14 @@ from chatbot import get_chatbot_response
 st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
 st.title("🧠 Mental Health Support Chatbot")
 
-# 💻 Dark Mode CSS Styling
-dark_mode_css = """
-<style>
-body {
-    background-color: #121212;
-    color: #FFFFFF;
-}
+# Inject CSS from external file
+def load_custom_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-[data-testid="stAppViewContainer"] {
-    background-color: #121212;
-}
+load_custom_css("styles.css")
 
-[data-testid="stMarkdownContainer"] {
-    font-size: 16px;
-    padding: 8px;
-    border-radius: 10px;
-}
-
-h1 {
-    color: #00FFCC;
-}
-</style>
-"""
-st.markdown(dark_mode_css, unsafe_allow_html=True)
+#st.markdown(dark_mode_css, unsafe_allow_html=True)
 
 # 🎛️ Mode selector
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
