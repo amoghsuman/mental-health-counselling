@@ -1,83 +1,115 @@
 import streamlit as st
 from datetime import datetime
+from chatbot import get_chatbot_response
 
-# Page configuration and UI cleanup
-st.set_page_config(page_title="Mental Health Chatbot", page_icon="🧠", layout="wide")
-hide_streamlit_style = """
+# --- Page Config ---
+st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
+st.title("🧠 Mental Health Support Chatbot")
+
+# --- Hide GitHub icon, footer, and "Hosted with Streamlit" ---
+clean_ui_css = """
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    [data-testid="stToolbar"] {
+        visibility: hidden !important;
+        height: 0px !important;
+    }
+    footer {
+        visibility: hidden !important;
+        height: 0px !important;
+    }
+    footer:after {
+        display: none !important;
+    }
+    .css-164nlkn.egzxvld1, .css-cio0dv.e1tzin5v2 {
+        visibility: hidden !important;
+        height: 0px !important;
+        display: none !important;
+    }
+    .block-container {
+        padding-bottom: 0rem !important;
+    }
     </style>
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)  # Hide Streamlit menu & footer&#8203;:contentReference[oaicite:3]{index=3}
+st.markdown(clean_ui_css, unsafe_allow_html=True)
 
-# Initialize session state for chat history and input, if not already set
+# --- Init Session State ---
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # list to hold messages (with role, text, timestamp)
-if "chat_input" not in st.session_state:
-    st.session_state.chat_input = ""    # current text in the chat input field
+    st.session_state.chat_history = []
+if "clear_chat" not in st.session_state:
+    st.session_state.clear_chat = False
 
-# Top section: Mode and Mood selection
-st.title("Mental Health Chatbot")
-mode = st.selectbox("Mode:", ["Therapy Mode", "Casual Mode"], key="mode_select")
-mood = st.selectbox("Mood:", ["🙂 Happy", "😢 Sad", "😟 Anxious", "😠 Angry", "😕 Confused"], key="mood_select")
+# --- Mode & Mood ---
+mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
+mood = st.radio(
+    "How are you feeling right now?",
+    ["😊 Happy", "😔 Sad", "😡 Angry", "😨 Anxious", "😐 Neutral"],
+    horizontal=True
+)
+mood_label = mood.split(" ")[1]
+st.markdown(f"🧭 Current mood: **{mood}**")
 
-# Define callback functions for sending message and clearing chat
-def send_message():
-    """Callback when user sends a message (via Enter key or Send button)."""
-    user_text = st.session_state.chat_input.strip()
-    if user_text:
-        # Append the user's message to chat history with timestamp
-        st.session_state.chat_history.append({
-            "role": "user", 
-            "text": user_text, 
-            "time": datetime.now().strftime("%H:%M")
-        })
-        # (Optional) Generate bot response here and append to history
-        # For example, a simple echo response (replace this with real model call):
-        bot_reply = f"You said: {user_text}"
-        st.session_state.chat_history.append({
-            "role": "bot", 
-            "text": bot_reply, 
-            "time": datetime.now().strftime("%H:%M")
-        })
-    # Clear the input field after sending
-    st.session_state.chat_input = ""  # safe to modify inside callback&#8203;:contentReference[oaicite:4]{index=4}
+# --- Message Handler ---
+def handle_message():
+    user_input = st.session_state.get("input_text", "").strip()
+    if user_input:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+        with st.spinner("Chatbot is typing..."):
+            response = get_chatbot_response(user_input, mode=mode, mood=mood_label)
+        st.session_state.chat_history.append((
+            ("You", user_input, now),
+            ("Chatbot", response, now)
+        ))
+    st.session_state["input_text"] = ""  # Safely reset inside callback
 
 def clear_chat():
-    """Callback to clear the conversation history."""
     st.session_state.chat_history = []
-    st.session_state.chat_input = ""
+    st.session_state.input_text = ""
 
-# ChatBar: Text input and Send button at the top of the chat
-input_col, send_col, clear_col = st.columns([0.8, 0.1, 0.1])
-with input_col:
+# --- Input Bar (at top of chat area) ---
+col3, col4, col5 = st.columns([6, 1, 1])
+with col3:
     st.text_input(
-        "Type your message", 
-        value=st.session_state.chat_input, 
-        key="chat_input", 
-        placeholder="Type a message and press Enter", 
-        on_change=send_message, 
+        "Type your message here...",
+        key="input_text",
+        on_change=handle_message,
+        placeholder="Type something to share what's on your mind...",
         label_visibility="collapsed"
     )
-with send_col:
-    st.button("✈️ Send", on_click=send_message)
-with clear_col:
-    st.button("🗑️ Clear Chat", on_click=clear_chat)
+with col4:
+    if st.button("✈️", key="send_icon"):
+        handle_message()
+with col5:
+    if st.button("🧹 Clear Chat"):
+        clear_chat()
 
-# Display chat history with emojis and timestamps
-st.divider()  # horizontal line separator
-for msg in st.session_state.chat_history:
-    if msg["role"] == "user":
-        st.markdown(f"🙂 **You:** {msg['text']}  \n*{msg['time']}*")
-    else:
-        st.markdown(f"🤖 **Bot:** {msg['text']}  \n*{msg['time']}*")
+# --- Chat Display (Newest on Top) ---
+SPEAKER_MAP = {
+    "You": {"role": "user", "emoji": "🧑‍💻"},
+    "Chatbot": {
+        "role": "assistant",
+        "emoji": {
+            "Therapist": "🧠",
+            "Friend": "👭",
+            "Coach": "💼"
+        }.get(mode, "🧠")
+    }
+}
 
-# Custom footer branding at the bottom
-st.markdown("---", unsafe_allow_html=True)
-st.markdown(
-    "<div style='text-align:center; color: gray; font-size:0.9rem;'>"
-    "© 2025 Your Company Name &mdash; All rights reserved."
-    "</div>",
-    unsafe_allow_html=True
-)
+for user_msg, bot_msg in reversed(st.session_state.chat_history):
+    for speaker_msg in [user_msg, bot_msg]:
+        if len(speaker_msg) == 3:
+            speaker, msg, ts = speaker_msg
+        else:
+            speaker, msg = speaker_msg
+            ts = "earlier"
+        meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
+        with st.chat_message(meta["role"]):
+            st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
+
+# --- Custom Footer ---
+custom_footer = """
+<div style='text-align: center; padding: 1rem 0; font-size: 14px; color: #888;'>
+    Powered by <strong>Grant Thornton</strong> | Built with 💙 by <strong>Amogh Suman</strong>
+</div>
+"""
+st.markdown(custom_footer, unsafe_allow_html=True)
