@@ -16,17 +16,16 @@ mood = st.radio(
     horizontal=True
 )
 mood_label = mood.split(" ")[1]  # Extract mood text (e.g., "Happy")
-
 st.markdown(f"🧭 Current mood: **{mood}**")
 
 # --- Initialize Chat History ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- User Input ---
-user_input = st.text_input("Type your message here...")
+# --- User Input Field with session-based key ---
+user_input = st.text_input("Type your message here...", key="input_text")
 
-# --- Handle Message ---
+# --- Send Message ---
 if st.button("Send") and user_input:
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     with st.spinner("Chatbot is typing..."):
@@ -35,6 +34,13 @@ if st.button("Send") and user_input:
         ("You", user_input, now),
         ("Chatbot", response, now)
     ))
+    st.session_state.input_text = ""  # ✅ Clear input field
+
+# --- Clear Chat Button ---
+if st.button("🧹 Clear Chat"):
+    st.session_state.chat_history = []
+    st.session_state.input_text = ""
+    st.experimental_rerun()
 
 # --- Avatar / Role Map ---
 SPEAKER_MAP = {
