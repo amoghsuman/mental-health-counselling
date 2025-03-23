@@ -67,9 +67,9 @@ def handle_message():
             "text": response,
             "time": now
         })
-    st.session_state.input_text = ""  # Safely reset inside callback
+    st.session_state.input_text = ""  # Safe to reset inside callback
 
-# --- Clear Chat Handler (flag-based) ---
+# --- Clear Chat Handler ---
 def clear_chat():
     st.session_state.clear_chat_flag = True
 
@@ -114,9 +114,8 @@ for message in reversed(st.session_state.chat_history):
 # --- Safe Clear Chat Rerun ---
 if st.session_state.clear_chat_flag:
     st.session_state.chat_history = []
-    st.session_state.input_text = ""
     st.session_state.clear_chat_flag = False
-    st.experimental_rerun()
+    st.rerun()  # ✅ clean reset without directly mutating input_text
 
 # --- Custom Footer ---
 custom_footer = """
