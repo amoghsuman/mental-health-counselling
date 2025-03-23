@@ -146,7 +146,7 @@ if st.session_state.get("clear_chat_triggered"):
 # --- Custom Footer ---
 custom_footer = """
     <div style='text-align: center; padding: 1rem 0; font-size: 14px; color: #888;'>
-        Powered by <strong>GranT Thornton</strong> </strong>
+        Powered by <strong>Grant Thornton</strong> </strong>
     </div>
 """
 st.markdown(custom_footer, unsafe_allow_html=True)
