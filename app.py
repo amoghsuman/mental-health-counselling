@@ -6,6 +6,14 @@ from chatbot import get_chatbot_response
 st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
 st.title("🧠 Mental Health Support Chatbot")
 
+# --- Hide Streamlit GitHub icon in top-right ---
+hide_github_icon = """
+    <style>
+        [data-testid="stToolbar"] {visibility: hidden !important;}
+    </style>
+"""
+st.markdown(hide_github_icon, unsafe_allow_html=True)
+
 # --- Mode Selector ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
 
