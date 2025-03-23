@@ -39,8 +39,7 @@ if st.button("Send") and user_input:
 # --- Clear Chat Button ---
 if st.button("🧹 Clear Chat"):
     st.session_state.chat_history = []
-    st.session_state.input_text = ""
-    st.experimental_rerun()
+    st.experimental_rerun() # ✅ No input_text reset needed here
 
 # --- Avatar / Role Map ---
 SPEAKER_MAP = {
