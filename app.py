@@ -41,6 +41,12 @@ st.text_input("Type your message here...", key="input_text", on_change=handle_me
 # --- Clear Chat Button ---
 if st.button("🧹 Clear Chat"):
     st.session_state.chat_history = []
+    st.session_state.input_text = ""
+    st.session_state.clear_chat_triggered = True
+
+# --- Safe rerun if flag is set ---
+if st.session_state.get("clear_chat_triggered"):
+    st.session_state.clear_chat_triggered = False
     st.experimental_rerun()
 
 # --- Avatar / Role Map ---
@@ -67,3 +73,8 @@ for user_msg, bot_msg in reversed(st.session_state.chat_history):
         meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
         with st.chat_message(meta["role"]):
             st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
+
+# --- Safe rerun if clear chat was clicked ---
+if st.session_state.get("clear_chat_triggered"):
+    st.session_state.clear_chat_triggered = False  # reset flag
+    st.experimental_rerun()
