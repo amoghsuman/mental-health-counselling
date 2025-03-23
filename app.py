@@ -1,5 +1,6 @@
 import streamlit as st
 from chatbot import get_chatbot_response
+from datetime import datetime
 
 st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
 st.title("🧠 Mental Health Support Chatbot")
@@ -15,13 +16,14 @@ if "chat_history" not in st.session_state:
 # Message input
 user_input = st.text_input("Type your message here...")
 
-# Handle response
+# After button press
 if st.button("Send") and user_input:
-    response = get_chatbot_response(user_input, mode=mode)
-    # Store user message + chatbot response as a pair
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    with st.spinner("Chatbot is typing..."):
+        response = get_chatbot_response(user_input, mode=mode)
     st.session_state.chat_history.append((
-        ("You", user_input),
-        ("Chatbot", response)
+        ("You", user_input, now),
+        ("Chatbot", response, now)
     ))
 
 # Emoji/avatar mapping by role
@@ -38,9 +40,10 @@ SPEAKER_MAP = {
 }
 
 # Display chat messages (latest on top, user followed by bot)
+# Display loop
 for user_msg, bot_msg in reversed(st.session_state.chat_history):
     for speaker_msg in [user_msg, bot_msg]:
-        speaker, msg = speaker_msg
+        speaker, msg, ts = speaker_msg
         meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
         with st.chat_message(meta["role"]):
-            st.markdown(f"{meta['emoji']} **{speaker}:** {msg}")
+            st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
