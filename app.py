@@ -53,7 +53,7 @@ mood_label = mood.split(" ")[1]
 st.markdown(f"🧭 Current mood: **{mood}**")
 
 # --- Message Handler ---
-def handle_message():
+def handle_message(clear_input=False):
     user_input = st.session_state.get("input_text", "").strip()
     if user_input:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -69,7 +69,8 @@ def handle_message():
             "text": response,
             "time": now
         })
-        st.session_state.input_text = ""  # Safe only inside this block
+        if clear_input:
+            st.session_state.input_text = ""  # ✅ Only clear if called via on_change
 
 # --- Clear Chat Handler ---
 def clear_chat():
@@ -81,7 +82,7 @@ with col3:
     st.text_input(
         "Type your message here...",
         key="input_text",
-        on_change=handle_message,
+        on_change=lambda: handle_message(clear_input=True),  # ✅ Safe only here
         placeholder="Type something to share what's on your mind...",
         label_visibility="collapsed"
     )
@@ -94,8 +95,8 @@ with col5:
 
 # --- Handle Send Button After Widgets Rendered ---
 if st.session_state.send_button_pressed:
-    handle_message()
-    st.session_state.send_button_pressed = False  # Reset safely
+    handle_message(clear_input=False)  # ❌ do not clear input directly
+    st.session_state.send_button_pressed = False
 
 # --- Chat Display (Newest on Top) ---
 for message in reversed(st.session_state.chat_history):
