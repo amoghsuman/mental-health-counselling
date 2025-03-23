@@ -86,7 +86,7 @@ with col3:
         "Type your message here...",
         key="input_text",
         on_change=lambda: handle_message(clear_input=True),
-        placeholder="Type something to share what's on your mind...",
+        placeholder="What's on your mind...",
         label_visibility="collapsed"
     )
 with col4:
