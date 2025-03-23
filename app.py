@@ -7,11 +7,11 @@ st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
 st.title("🧠 Mental Health Support Chatbot")
 
 # --- Load Custom Styles ---
-def load_custom_css(file_path):
-    with open(file_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+#def load_custom_css(file_path):
+ #   with open(file_path) as f:
+  #      st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-load_custom_css("styles.css")
+#load_custom_css("styles.css")
 
 # --- Mode Switcher ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
