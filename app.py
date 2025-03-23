@@ -51,7 +51,7 @@ mood_label = mood.split(" ")[1]
 st.markdown(f"🧭 Current mood: **{mood}**")
 
 # --- Message Handler ---
-def handle_message():
+def handle_message(clear_input=True):
     user_input = st.session_state.input_text
     if user_input:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -61,13 +61,14 @@ def handle_message():
             ("You", user_input, now),
             ("Chatbot", response, now)
         ))
-        st.session_state["input_text"] = ""  # Clear after sending
+        if clear_input:
+            st.session_state["input_text"] = ""  # Safe only inside on_change
 
 # --- Top Buttons (Send + Clear Chat) ---
 col1, col2 = st.columns([1, 1])
 with col1:
     if st.button("📝 Send"):
-        handle_message()
+        handle_message(clear_input=False)
 with col2:
     if st.button("🧹 Clear Chat"):
         st.session_state.chat_history = []
@@ -141,13 +142,19 @@ st.markdown(sticky_input_css, unsafe_allow_html=True)
 st.markdown("<div class='sticky-container'><div class='input-row'>", unsafe_allow_html=True)
 col3, col4 = st.columns([6, 1])
 with col3:
-    st.text_input("Type your message here...", key="input_text", on_change=handle_message, placeholder="Type something to share what's on your mind...", label_visibility="collapsed")
+    st.text_input(
+        "Type your message here...",
+        key="input_text",
+        on_change=handle_message,  # Enter key triggers here
+        placeholder="Type something to share what's on your mind...",
+        label_visibility="collapsed"
+    )
 with col4:
     if st.button("✈️", key="send_icon"):
-        handle_message()
+        handle_message(clear_input=False)
 st.markdown("</div></div>", unsafe_allow_html=True)
 
-# --- SAFE RERUN after Clear Chat ---
+# --- Safe rerun after Clear Chat ---
 if st.session_state.get("clear_chat_triggered"):
     st.session_state.clear_chat_triggered = False
     st.stop()
