@@ -90,7 +90,7 @@ with col3:
         label_visibility="collapsed"
     )
 with col4:
-    if st.button("✈️", key="send_icon"):
+    if st.button("✈️ Send", key="send_icon"):
         st.session_state.send_button_pressed = True
 with col5:
     if st.button("🧹 Clear Chat"):
