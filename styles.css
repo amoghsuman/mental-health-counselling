@@ -1,34 +1,39 @@
-/* Dark background and text */
-body, [data-testid="stAppViewContainer"] {
-    background-color: #121212 !important;
-    color: #E0E0E0 !important;
+/* Set background and base text color */
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: #181818 !important;
+    color: #EAEAEA !important;
 }
 
-/* Headings and paragraphs */
-h1, h2, h3, h4, h5, h6, p, label, span, div {
-    color: #E0E0E0 !important;
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #00FFCC !important;
 }
 
-/* Text input */
-input[type="text"] {
-    background-color: #1E1E1E !important;
-    color: #FFFFFF !important;
-    border: 1px solid #444444 !important;
-}
-
-/* Dropdown and buttons */
-[data-testid="stSelectbox"] div, .stButton > button {
-    background-color: #2A2A2A !important;
-    color: #FFFFFF !important;
-}
-
-/* Chat bubble styling */
+/* Markdown content */
 [data-testid="stMarkdownContainer"] {
+    color: #EAEAEA !important;
     font-size: 16px;
-    background-color: #1E1E1E;
-    padding: 10px;
-    border-radius: 10px;
+}
+
+/* Chat input field */
+input[type="text"] {
+    background-color: #282828 !important;
     color: #FFFFFF !important;
+    border: 1px solid #444 !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #00FFCC !important;
+    color: #000000 !important;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+/* Selectbox (mode switcher) */
+[data-testid="stSelectbox"] div {
+    background-color: #282828 !important;
+    color: #EAEAEA !important;
 }
 
 /* Spinner */
