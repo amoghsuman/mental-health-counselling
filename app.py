@@ -55,10 +55,16 @@ def handle_message():
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
         with st.spinner("Chatbot is typing..."):
             response = get_chatbot_response(user_input, mode=mode, mood=mood_label)
-        st.session_state.chat_history.append((
-            ("You", user_input, now),
-            ("Chatbot", response, now)
-        ))
+        st.session_state.chat_history.append({
+            "role": "user",
+            "text": user_input,
+            "time": now
+        })
+        st.session_state.chat_history.append({
+            "role": "bot",
+            "text": response,
+            "time": now
+        })
     st.session_state["input_text"] = ""  # Safely reset inside callback
 
 def clear_chat():
@@ -83,28 +89,25 @@ with col5:
         clear_chat()
 
 # --- Chat Display (Newest on Top) ---
-SPEAKER_MAP = {
-    "You": {"role": "user", "emoji": "🧑‍💻"},
-    "Chatbot": {
-        "role": "assistant",
-        "emoji": {
-            "Therapist": "🧠",
-            "Friend": "👭",
-            "Coach": "💼"
-        }.get(mode, "🧠")
-    }
-}
+for message in reversed(st.session_state.chat_history):
+    role = message.get("role", "bot")
+    text = message.get("text", "")
+    ts = message.get("time", "earlier")
 
-for user_msg, bot_msg in reversed(st.session_state.chat_history):
-    for speaker_msg in [user_msg, bot_msg]:
-        if len(speaker_msg) == 3:
-            speaker, msg, ts = speaker_msg
-        else:
-            speaker, msg = speaker_msg
-            ts = "earlier"
-        meta = SPEAKER_MAP.get(speaker, {"role": "assistant", "emoji": "🤖"})
-        with st.chat_message(meta["role"]):
-            st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
+    meta = {
+        "user": {"role": "user", "emoji": "🧑‍💻"},
+        "bot": {
+            "role": "assistant",
+            "emoji": {
+                "Therapist": "🧠",
+                "Friend": "👭",
+                "Coach": "💼"
+            }.get(mode, "🧠")
+        }
+    }.get(role, {"role": "assistant", "emoji": "🤖"})
+
+    with st.chat_message(meta["role"]):
+        st.markdown(f"{meta['emoji']} **{role.capitalize()}** _(at {ts})_: {text}")
 
 # --- Custom Footer ---
 custom_footer = """
