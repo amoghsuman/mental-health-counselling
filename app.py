@@ -6,20 +6,33 @@ from chatbot import get_chatbot_response
 st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
 st.title("🧠 Mental Health Support Chatbot")
 
-# --- Hide GitHub icon and "Made with Streamlit" footer ---
-hide_elements = """
+# --- Hide GitHub icon, menu, and footer on all devices (mobile & desktop) ---
+clean_ui_css = """
     <style>
-        /* Hide top-right GitHub icon and menu */
-        [data-testid="stToolbar"] { visibility: hidden !important; }
+        /* Hide top-right toolbar (GitHub icon, hamburger menu) */
+        [data-testid="stToolbar"] {
+            visibility: hidden !important;
+            height: 0px !important;
+        }
 
-        /* Hide "Made with Streamlit" footer */
-        footer { visibility: hidden !important; }
+        /* Hide Streamlit footer */
+        footer {
+            visibility: hidden !important;
+            height: 0px !important;
+        }
 
-        /* Optional: also hide the blank space at the bottom */
-        footer:after { content:''; display:block; height:0px; }
+        footer:after {
+            content: "";
+            display: none !important;
+        }
+
+        /* Remove padding at bottom that appears on mobile */
+        .block-container {
+            padding-bottom: 0rem !important;
+        }
     </style>
 """
-st.markdown(hide_elements, unsafe_allow_html=True)
+st.markdown(clean_ui_css, unsafe_allow_html=True)
 
 
 # --- Mode Selector ---
