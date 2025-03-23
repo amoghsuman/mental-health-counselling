@@ -22,8 +22,9 @@ st.markdown(f"🧭 Current mood: **{mood}**")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- User Input Field with session-based key ---
-user_input = st.text_input("Type your message here...", key="input_text")
+# --- User Input Field ---
+st.text_input("Type your message here...", key="input_text")
+user_input = st.session_state.input_text
 
 # --- Send Message ---
 if st.button("Send") and user_input:
@@ -34,7 +35,7 @@ if st.button("Send") and user_input:
         ("You", user_input, now),
         ("Chatbot", response, now)
     ))
-    st.session_state.input_text = ""  # ✅ Clear input field
+    st.session_state["input_text"] = ""  # ✅ Safe way to clear field
 
 # --- Clear Chat Button ---
 if st.button("🧹 Clear Chat"):
