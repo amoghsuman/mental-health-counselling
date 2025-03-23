@@ -3,10 +3,10 @@ from datetime import datetime
 from chatbot import get_chatbot_response
 
 # --- Page Config ---
-st.set_page_config(page_title="🧠 Mental Health Assistant", layout="centered")
-st.title("🧠 Mental Health Assistant")
+st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
+st.title("🧠 Mental Health Support Chatbot")
 
-# --- Hide GitHub icon, footer, and "Hosted with Streamlit" on all devices ---
+# --- Hide GitHub icon, footer, and "Hosted with Streamlit" ---
 clean_ui_css = """
     <style>
     [data-testid="stToolbar"] {
@@ -32,6 +32,19 @@ clean_ui_css = """
 """
 st.markdown(clean_ui_css, unsafe_allow_html=True)
 
+# --- Init Session State ---
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "input_text" not in st.session_state:
+    st.session_state.input_text = ""
+if "clear_chat_triggered" not in st.session_state:
+    st.session_state.clear_chat_triggered = False
+
+# ✅ Safe early rerun (before layout) if Clear Chat was clicked
+if st.session_state.clear_chat_triggered:
+    st.session_state.clear_chat_triggered = False
+    st.experimental_rerun()
+
 # --- Mode & Mood ---
 mode = st.selectbox("Choose your support style:", ["Therapist", "Friend", "Coach"])
 mood = st.radio(
@@ -41,14 +54,6 @@ mood = st.radio(
 )
 mood_label = mood.split(" ")[1]
 st.markdown(f"🧭 Current mood: **{mood}**")
-
-# --- Init Chat State ---
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "input_text" not in st.session_state:
-    st.session_state.input_text = ""
-if "clear_chat_triggered" not in st.session_state:
-    st.session_state.clear_chat_triggered = False
 
 # --- Message Handler ---
 def handle_message():
@@ -61,9 +66,9 @@ def handle_message():
             ("You", user_input, now),
             ("Chatbot", response, now)
         ))
-        st.session_state["input_text"] = ""  # Clear input field
+        st.session_state["input_text"] = ""  # Clear after sending
 
-# --- Top Buttons (Optional) ---
+# --- Top Buttons (Send + Clear Chat) ---
 col1, col2 = st.columns([1, 1])
 with col1:
     if st.button("📝 Send"):
@@ -74,7 +79,7 @@ with col2:
         st.session_state.input_text = ""
         st.session_state.clear_chat_triggered = True
 
-# --- Display Chat (Latest on Top) ---
+# --- Chat Display (Newest on Top) ---
 SPEAKER_MAP = {
     "You": {"role": "user", "emoji": "🧑‍💻"},
     "Chatbot": {
@@ -98,7 +103,7 @@ for user_msg, bot_msg in reversed(st.session_state.chat_history):
         with st.chat_message(meta["role"]):
             st.markdown(f"{meta['emoji']} **{speaker}** _(at {ts})_: {msg}")
 
-# --- Sticky Input Box with Placeholder ---
+# --- Sticky Input Bar with Placeholder & Send Icon ---
 sticky_input_css = """
 <style>
 .sticky-container {
@@ -138,7 +143,6 @@ sticky_input_css = """
 """
 st.markdown(sticky_input_css, unsafe_allow_html=True)
 
-# --- Render Sticky Input UI ---
 st.markdown("<div class='sticky-container'><div class='input-row'>", unsafe_allow_html=True)
 col3, col4 = st.columns([6, 1])
 with col3:
@@ -148,15 +152,10 @@ with col4:
         handle_message()
 st.markdown("</div></div>", unsafe_allow_html=True)
 
-# --- Safe rerun after clear chat ---
-if st.session_state.clear_chat_triggered:
-    st.session_state.clear_chat_triggered = False
-    st.experimental_rerun()
-
 # --- Custom Footer ---
 custom_footer = """
 <div style='text-align: center; padding: 1rem 0; font-size: 14px; color: #888;'>
-    Built with 💙 by <strong>Grant Thornton</strong> 
+    Powered by <strong>Grant Thornton</strong> | Built with 💙 by <strong>Amogh Suman</strong>
 </div>
 """
 st.markdown(custom_footer, unsafe_allow_html=True)
