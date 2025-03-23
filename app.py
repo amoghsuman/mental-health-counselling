@@ -3,8 +3,8 @@ from datetime import datetime
 from chatbot import get_chatbot_response
 
 # --- Page Config ---
-st.set_page_config(page_title="🧠 Mental Health Assistant", layout="centered")
-st.title("🧠 Mental Health Counselling Assistant")
+st.set_page_config(page_title="🧠 Mental Health Chatbot", layout="centered")
+st.title("🧠 Mental Health Support Chatbot")
 
 # --- Hide GitHub icon, footer, and "Hosted with Streamlit" ---
 clean_ui_css = """
@@ -69,10 +69,11 @@ def handle_message(clear_input=False):
         st.session_state.chat_history.append({
             "role": "bot",
             "text": response,
-            "time": now
+            "time": now,
+            "mode": mode  # ✅ Store the mode with the bot response
         })
         if clear_input:
-            st.session_state.input_text = ""  # ✅ Safe inside on_change
+            st.session_state.input_text = ""
 
 # --- Clear Chat Handler ---
 def clear_chat():
@@ -85,11 +86,11 @@ with col3:
         "Type your message here...",
         key="input_text",
         on_change=lambda: handle_message(clear_input=True),
-        placeholder="Tell me what's on your mind...",
+        placeholder="Type something to share what's on your mind...",
         label_visibility="collapsed"
     )
 with col4:
-    if st.button("✈️ Send", key="send_icon"):
+    if st.button("✈️", key="send_icon"):
         st.session_state.send_button_pressed = True
 with col5:
     if st.button("🧹 Clear Chat"):
@@ -97,30 +98,26 @@ with col5:
 
 # --- Handle Send Button After Widgets Rendered ---
 if st.session_state.send_button_pressed:
-    handle_message(clear_input=False)  # ❌ Don't clear directly
+    handle_message(clear_input=False)
     st.session_state.send_button_pressed = False
-    st.session_state.reset_input_flag = True  # ✅ Triggers safe rerun reset
+    st.session_state.reset_input_flag = True  # Triggers safe rerun
 
 # --- Reset input_text safely via rerun ---
 if st.session_state.reset_input_flag:
     st.session_state.reset_input_flag = False
     st.rerun()
 
-# --- Chat Display (Newest on Top) ---
-# --- Chat Display (Newest pairs on top, User above Bot) ---
+# --- Chat Display (User above Bot, Newest on Top) ---
 pairs = list(zip(st.session_state.chat_history[::2], st.session_state.chat_history[1::2]))
 for user_msg, bot_msg in reversed(pairs):
     for msg in [user_msg, bot_msg]:
         role = msg.get("role", "bot")
         text = msg.get("text", "")
         ts = msg.get("time", "earlier")
-
-        name = "User" if role == "user" else mode  # Show role as 'Therapist', 'Friend', or 'Coach'
+        display_name = "User" if role == "user" else msg.get("mode", "Therapist")
 
         with st.chat_message("user" if role == "user" else "assistant"):
-            st.markdown(f"**{name}** _(at {ts})_: {text}")
-
-
+            st.markdown(f"**{display_name}** _(at {ts})_: {text}")
 
 # --- Safe Clear Chat Rerun ---
 if st.session_state.clear_chat_flag:
